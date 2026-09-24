@@ -1,0 +1,403 @@
+{
+  "results": [
+    {
+      "episode_id": "nominal_ep000",
+      "scenario_id": "nominal",
+      "success": "True",
+      "failure_stage": "none",
+      "steps": 1362
+    },
+    {
+      "episode_id": "nominal_ep001",
+      "scenario_id": "nominal",
+      "success": "True",
+      "failure_stage": "none",
+      "steps": 1362
+    },
+    {
+      "episode_id": "nominal_ep002",
+      "scenario_id": "nominal",
+      "success": "True",
+      "failure_stage": "none",
+      "steps": 1363
+    },
+    {
+      "episode_id": "nominal_ep003",
+      "scenario_id": "nominal",
+      "success": "True",
+      "failure_stage": "none",
+      "steps": 1362
+    },
+    {
+      "episode_id": "nominal_ep004",
+      "scenario_id": "nominal",
+      "success": "True",
+      "failure_stage": "none",
+      "steps": 1362
+    },
+    {
+      "episode_id": "nominal_ep005",
+      "scenario_id": "nominal",
+      "success": "True",
+      "failure_stage": "none",
+      "steps": 1362
+    },
+    {
+      "episode_id": "nominal_ep006",
+      "scenario_id": "nominal",
+      "success": "True",
+      "failure_stage": "none",
+      "steps": 1362
+    },
+    {
+      "episode_id": "nominal_ep007",
+      "scenario_id": "nominal",
+      "success": "True",
+      "failure_stage": "none",
+      "steps": 1362
+    },
+    {
+      "episode_id": "low_friction_ep000",
+      "scenario_id": "low_friction",
+      "success": false,
+      "failure_stage": "lift",
+      "steps": 418
+    },
+    {
+      "episode_id": "low_friction_ep001",
+      "scenario_id": "low_friction",
+      "success": false,
+      "failure_stage": "lift",
+      "steps": 418
+    },
+    {
+      "episode_id": "low_friction_ep002",
+      "scenario_id": "low_friction",
+      "success": false,
+      "failure_stage": "lift",
+      "steps": 420
+    },
+    {
+      "episode_id": "low_friction_ep003",
+      "scenario_id": "low_friction",
+      "success": false,
+      "failure_stage": "lift",
+      "steps": 418
+    },
+    {
+      "episode_id": "low_friction_ep004",
+      "scenario_id": "low_friction",
+      "success": false,
+      "failure_stage": "lift",
+      "steps": 418
+    },
+    {
+      "episode_id": "low_friction_ep005",
+      "scenario_id": "low_friction",
+      "success": false,
+      "failure_stage": "lift",
+      "steps": 418
+    },
+    {
+      "episode_id": "low_friction_ep006",
+      "scenario_id": "low_friction",
+      "success": false,
+      "failure_stage": "lift",
+      "steps": 419
+    },
+    {
+      "episode_id": "pose_error_ep000",
+      "scenario_id": "pose_error",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "pose_error_ep001",
+      "scenario_id": "pose_error",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "pose_error_ep002",
+      "scenario_id": "pose_error",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "pose_error_ep003",
+      "scenario_id": "pose_error",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "pose_error_ep004",
+      "scenario_id": "pose_error",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "pose_error_ep005",
+      "scenario_id": "pose_error",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "pose_error_ep006",
+      "scenario_id": "pose_error",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "low_gain_ep000",
+      "scenario_id": "low_gain",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "low_gain_ep001",
+      "scenario_id": "low_gain",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "low_gain_ep002",
+      "scenario_id": "low_gain",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "low_gain_ep003",
+      "scenario_id": "low_gain",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "low_gain_ep004",
+      "scenario_id": "low_gain",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "low_gain_ep005",
+      "scenario_id": "low_gain",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "low_gain_ep006",
+      "scenario_id": "low_gain",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "action_delay_ep000",
+      "scenario_id": "action_delay",
+      "success": "True",
+      "failure_stage": "none",
+      "steps": 1423
+    },
+    {
+      "episode_id": "action_delay_ep001",
+      "scenario_id": "action_delay",
+      "success": "True",
+      "failure_stage": "none",
+      "steps": 1423
+    },
+    {
+      "episode_id": "action_delay_ep002",
+      "scenario_id": "action_delay",
+      "success": "True",
+      "failure_stage": "none",
+      "steps": 1424
+    },
+    {
+      "episode_id": "action_delay_ep003",
+      "scenario_id": "action_delay",
+      "success": "False",
+      "failure_stage": "place",
+      "steps": 1698
+    },
+    {
+      "episode_id": "action_delay_ep004",
+      "scenario_id": "action_delay",
+      "success": "False",
+      "failure_stage": "place",
+      "steps": 1422
+    },
+    {
+      "episode_id": "action_delay_ep005",
+      "scenario_id": "action_delay",
+      "success": "True",
+      "failure_stage": "none",
+      "steps": 1424
+    },
+    {
+      "episode_id": "action_delay_ep006",
+      "scenario_id": "action_delay",
+      "success": "False",
+      "failure_stage": "place",
+      "steps": 1699
+    },
+    {
+      "episode_id": "heavy_object_ep000",
+      "scenario_id": "heavy_object",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "heavy_object_ep001",
+      "scenario_id": "heavy_object",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "heavy_object_ep002",
+      "scenario_id": "heavy_object",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "heavy_object_ep003",
+      "scenario_id": "heavy_object",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "heavy_object_ep004",
+      "scenario_id": "heavy_object",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "heavy_object_ep005",
+      "scenario_id": "heavy_object",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "heavy_object_ep006",
+      "scenario_id": "heavy_object",
+      "success": false,
+      "failure_stage": "approach",
+      "steps": 501
+    },
+    {
+      "episode_id": "fast_lift_ep000",
+      "scenario_id": "fast_lift",
+      "success": false,
+      "failure_stage": "lift",
+      "steps": 418
+    },
+    {
+      "episode_id": "fast_lift_ep001",
+      "scenario_id": "fast_lift",
+      "success": false,
+      "failure_stage": "lift",
+      "steps": 418
+    },
+    {
+      "episode_id": "fast_lift_ep002",
+      "scenario_id": "fast_lift",
+      "success": false,
+      "failure_stage": "lift",
+      "steps": 420
+    },
+    {
+      "episode_id": "fast_lift_ep003",
+      "scenario_id": "fast_lift",
+      "success": false,
+      "failure_stage": "lift",
+      "steps": 418
+    },
+    {
+      "episode_id": "fast_lift_ep004",
+      "scenario_id": "fast_lift",
+      "success": false,
+      "failure_stage": "lift",
+      "steps": 418
+    },
+    {
+      "episode_id": "fast_lift_ep005",
+      "scenario_id": "fast_lift",
+      "success": false,
+      "failure_stage": "lift",
+      "steps": 418
+    },
+    {
+      "episode_id": "fast_lift_ep006",
+      "scenario_id": "fast_lift",
+      "success": false,
+      "failure_stage": "lift",
+      "steps": 419
+    }
+  ],
+  "scenarios": {
+    "nominal": {
+      "total": 8,
+      "success": 8,
+      "failures": {}
+    },
+    "low_friction": {
+      "total": 7,
+      "success": 0,
+      "failures": {
+        "lift": 7
+      }
+    },
+    "pose_error": {
+      "total": 7,
+      "success": 0,
+      "failures": {
+        "approach": 7
+      }
+    },
+    "low_gain": {
+      "total": 7,
+      "success": 0,
+      "failures": {
+        "approach": 7
+      }
+    },
+    "action_delay": {
+      "total": 7,
+      "success": 4,
+      "failures": {
+        "place": 3
+      }
+    },
+    "heavy_object": {
+      "total": 7,
+      "success": 0,
+      "failures": {
+        "approach": 7
+      }
+    },
+    "fast_lift": {
+      "total": 7,
+      "success": 0,
+      "failures": {
+        "lift": 7
+      }
+    }
+  }
+}
