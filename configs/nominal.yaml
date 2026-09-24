@@ -1,0 +1,34 @@
+# ============================================================
+# NOMINAL BASELINE CONFIG
+# All physics values are "healthy" — this should mostly succeed.
+# This is your control group / reference behavior.
+# ============================================================
+
+scenario_id: "nominal"
+
+# --- Physics parameters ---
+friction: 0.8          # Coulomb friction coefficient (high = grippy)
+object_mass: 0.5       # kg — weight of the cube
+restitution: 0.1       # Bounciness (0=dead stop, 1=elastic)
+damping: 1.0           # Joint damping (energy dissipation)
+
+# --- Controller parameters ---
+action_delay: 0.0      # seconds — latency before command executes
+kp: 100.0              # Proportional gain (position control stiffness)
+kd: 10.0               # Derivative gain (damping / smoothness)
+
+# --- Object state ---
+pose_offset: 0.0       # meters — how far object is from expected position
+
+# --- Motion parameters ---
+lift_speed: 0.3        # m/s — how fast the arm lifts after grasping
+
+# --- Experiment parameters ---
+num_episodes: 10       # How many runs for this condition
+random_seed: 42        # Fixed seed for reproducibility
+simulation_timestep: 0.002   # seconds (500 Hz physics)
+control_frequency: 50        # Hz — how often new commands are sent
+
+# --- Success criteria ---
+success_distance_threshold: 0.02   # meters — must place within 2cm of target
+success_time_limit: 10.0           # seconds — must complete within 10s
