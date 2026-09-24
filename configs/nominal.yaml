@@ -14,8 +14,8 @@ damping: 1.0           # Joint damping (energy dissipation)
 
 # --- Controller parameters ---
 action_delay: 0.0      # seconds — latency before command executes
-kp: 100.0              # Proportional gain (position control stiffness)
-kd: 10.0               # Derivative gain (damping / smoothness)
+kp: 500.0              # Proportional gain (position control stiffness)
+kd: 50.0               # Derivative gain (damping / smoothness)
 
 # --- Object state ---
 pose_offset: 0.0       # meters — how far object is from expected position
