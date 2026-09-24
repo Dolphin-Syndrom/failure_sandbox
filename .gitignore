@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# Data — episodes can be large, don't commit raw data
+data/episodes/
+plots/
+
+# Conda/pip
+*.egg-info/
+
+# Editor
+.vscode/
+.idea/

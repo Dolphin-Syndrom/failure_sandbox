@@ -1,0 +1,11 @@
+# Obliviq Failure Debugging Sandbox v0 — Dependencies
+# Install with: pip install -r requirements.txt
+# Python: 3.11 (use conda env obliviq)
+
+mujoco>=3.0.0        # Physics simulation engine
+numpy>=1.26.0        # Numerical arrays (joint states, telemetry)
+matplotlib>=3.8.0    # Plotting (trajectories, failure boundaries)
+pandas>=2.1.0        # Telemetry CSV loading and analysis
+scipy>=1.12.0        # Signal processing, statistics (change-point detection)
+pyyaml>=6.0.0        # Config file loading
+h5py>=3.10.0         # HDF5 file format (optional, for large telemetry)
