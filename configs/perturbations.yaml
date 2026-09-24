@@ -1,113 +1,70 @@
-# ============================================================
-# PERTURBATION CONFIGS
-# Each entry changes exactly ONE parameter from nominal.
-# Everything else stays at the nominal baseline value.
-# This is "controlled perturbation" — the core of experiment design.
-#
-# WHY: If you change two things at once, you don't know which
-# one caused the failure. One variable at a time = causal clarity.
-# ============================================================
+# Each entry changes ONE parameter from nominal. Everything else = nominal values.
+# Nominal: friction=0.8, mass=0.5, delay=0.0, kp=500, kd=50, offset=0.0, speed=0.3
 
 perturbations:
 
-  # ----------------------------------------------------------
-  # P1: REDUCED FRICTION
-  # Physical meaning: slippery object / gripper surface
-  # Expected failure: object slips during lift or transport
-  # Failure family: contact/slip
-  # ----------------------------------------------------------
   - scenario_id: "low_friction"
-    friction: 0.25           # << CHANGED (nominal=0.8)
+    friction: 0.15
     object_mass: 0.5
     action_delay: 0.0
-    kp: 100.0
-    kd: 10.0
+    kp: 500.0
+    kd: 50.0
     pose_offset: 0.0
     lift_speed: 0.3
-    num_episodes: 8
+    num_episodes: 7
     random_seed: 42
 
-  # ----------------------------------------------------------
-  # P2: OBJECT POSE ERROR
-  # Physical meaning: perception gave wrong object position
-  # Expected failure: gripper misses or clips the object edge
-  # Failure family: target/pose
-  # ----------------------------------------------------------
   - scenario_id: "pose_error"
     friction: 0.8
     object_mass: 0.5
     action_delay: 0.0
-    kp: 100.0
-    kd: 10.0
-    pose_offset: 0.03        # << CHANGED — 3cm offset (nominal=0.0)
+    kp: 500.0
+    kd: 50.0
+    pose_offset: 0.06
     lift_speed: 0.3
-    num_episodes: 8
+    num_episodes: 7
     random_seed: 42
 
-  # ----------------------------------------------------------
-  # P3: POOR CONTROLLER GAIN (LOW KP)
-  # Physical meaning: under-tuned position controller
-  # Expected failure: sluggish tracking, doesn't reach target in time
-  # Failure family: control
-  # ----------------------------------------------------------
   - scenario_id: "low_gain"
     friction: 0.8
     object_mass: 0.5
     action_delay: 0.0
-    kp: 10.0                 # << CHANGED — 10x weaker (nominal=100.0)
-    kd: 1.0                  # << CHANGED proportionally
+    kp: 30.0
+    kd: 3.0
     pose_offset: 0.0
     lift_speed: 0.3
-    num_episodes: 8
+    num_episodes: 7
     random_seed: 42
 
-  # ----------------------------------------------------------
-  # P4: INJECTED ACTION DELAY
-  # Physical meaning: communication latency / buffering
-  # Expected failure: commands arrive late, contact timing wrong
-  # Failure family: timing
-  # ----------------------------------------------------------
   - scenario_id: "action_delay"
     friction: 0.8
     object_mass: 0.5
-    action_delay: 0.1        # << CHANGED — 100ms delay (nominal=0.0)
-    kp: 100.0
-    kd: 10.0
+    action_delay: 0.15
+    kp: 500.0
+    kd: 50.0
     pose_offset: 0.0
     lift_speed: 0.3
-    num_episodes: 8
+    num_episodes: 7
     random_seed: 42
 
-  # ----------------------------------------------------------
-  # P5: CHANGED OBJECT MASS (HEAVIER)
-  # Physical meaning: wrong mass estimate / different object
-  # Expected failure: controller doesn't apply enough torque
-  # Failure family: dynamics mismatch
-  # ----------------------------------------------------------
   - scenario_id: "heavy_object"
     friction: 0.8
-    object_mass: 2.0         # << CHANGED — 4x heavier (nominal=0.5)
+    object_mass: 8.0
     action_delay: 0.0
-    kp: 100.0
-    kd: 10.0
+    kp: 500.0
+    kd: 50.0
     pose_offset: 0.0
     lift_speed: 0.3
-    num_episodes: 8
+    num_episodes: 7
     random_seed: 42
 
-  # ----------------------------------------------------------
-  # P6: HIGH LIFT SPEED
-  # Physical meaning: aggressive motion profile
-  # Expected failure: lift acceleration exceeds friction capacity
-  # Failure family: contact/slip (via dynamics)
-  # ----------------------------------------------------------
   - scenario_id: "fast_lift"
     friction: 0.8
     object_mass: 0.5
     action_delay: 0.0
-    kp: 100.0
-    kd: 10.0
+    kp: 500.0
+    kd: 50.0
     pose_offset: 0.0
-    lift_speed: 1.2          # << CHANGED — 4x faster (nominal=0.3)
-    num_episodes: 8
+    lift_speed: 2.0
+    num_episodes: 7
     random_seed: 42
