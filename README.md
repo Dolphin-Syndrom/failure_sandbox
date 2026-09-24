@@ -11,10 +11,10 @@ A simulated pick-and-place robot arm (MuJoCo) that:
 
 ## Quick Start (Reproducible)
 ```bash
-git clone <repo-url>
-cd obliviq_failure_sandbox
-conda create -n obliviq python=3.11 -y
-conda activate obliviq
+git clone https://github.com/Dolphin-Syndrom/failure_sandbox
+cd failure_sandbox
+conda create -n sandbox python=3.11 -y
+conda activate sandbox
 pip install -r requirements.txt
 python verify_setup.py           # Check everything works
 python experiments/run_sweep.py  # Run all experiments
