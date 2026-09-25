@@ -28,6 +28,7 @@ from pathlib import Path
 
 SCENE_XML = """
 <mujoco model="pick_place">
+  <compiler angle="radian"/>
   <option gravity="0 0 -9.81" timestep="{timestep}" solver="Newton"
           iterations="50" integrator="RK4"/>
 
@@ -51,7 +52,8 @@ SCENE_XML = """
     <body name="base" pos="0 0 0.42">
       <joint name="joint0" type="hinge" axis="0 0 1" range="-1.57 1.57"
              damping="{damping}"/>
-      <geom type="cylinder" size="0.04 0.04" rgba="0.25 0.35 0.7 1" mass="0.5"/>
+      <geom type="cylinder" size="0.04 0.04" rgba="0.25 0.35 0.7 1" mass="0.5"
+            contype="0" conaffinity="0"/>
 
       <body name="link1" pos="0 0 0.04">
         <joint name="joint1" type="hinge" axis="0 1 0" range="-1.57 1.57"
@@ -60,7 +62,7 @@ SCENE_XML = """
               rgba="0.3 0.4 0.8 1" mass="0.3"/>
 
         <body name="link2" pos="0.22 0 0">
-          <joint name="joint2" type="hinge" axis="0 1 0" range="-2.5 0.5"
+          <joint name="joint2" type="hinge" axis="0 1 0" range="-2.5 2.5"
                  damping="{damping}"/>
           <geom type="capsule" size="0.018" fromto="0 0 0 0.18 0 0"
                 rgba="0.4 0.5 0.9 1" mass="0.2"/>
@@ -99,7 +101,7 @@ SCENE_XML = """
   <actuator>
     <position name="act0"   joint="joint0" kp="{kp}"  ctrlrange="-1.57 1.57"/>
     <position name="act1"   joint="joint1" kp="{kp}"  ctrlrange="-1.57 1.57"/>
-    <position name="act2"   joint="joint2" kp="{kp}"  ctrlrange="-2.5 0.5"/>
+    <position name="act2"   joint="joint2" kp="{kp}"  ctrlrange="-2.5 2.5"/>
     <position name="act_fl" joint="jfl"    kp="300"   ctrlrange="-0.03 0.0"/>
     <position name="act_fr" joint="jfr"    kp="300"   ctrlrange="-0.03 0.0"/>
   </actuator>
@@ -119,26 +121,32 @@ def load_config(config_path: str) -> dict:
 
 def simple_ik(world_target: np.ndarray, arm_base: np.ndarray) -> np.ndarray:
     """
-    Analytical IK for a 3-DOF arm: yaw + 2 pitch joints.
-    Uses law-of-cosines for the 2-link planar arm.
-    Returns [q0, q1, q2] in radians.
+    Exact analytical IK for the 3-DOF planar arm.
     """
-    L1, L2 = 0.22, 0.198
-
-    delta       = world_target - arm_base
-    dx, dy, dz  = delta
-    q0          = np.arctan2(dy, dx)
-
-    r_h = np.sqrt(dx**2 + dy**2)
-    r   = np.clip(np.sqrt(r_h**2 + dz**2), 0.04, L1 + L2 - 0.005)
-
-    cos_q2 = np.clip((r**2 - L1**2 - L2**2) / (2 * L1 * L2), -1.0, 1.0)
-    q2     = -np.arccos(cos_q2)
-
-    alpha = np.arctan2(dz, r_h)
-    beta  = np.arctan2(L2 * np.sin(-q2), L1 + L2 * np.cos(-q2))
-    q1    = alpha - beta
-
+    L1, L2 = 0.22, 0.18  # Link lengths from XML
+    shoulder_pos = arm_base + np.array([0, 0, 0.04])
+    
+    dx = world_target[0] - shoulder_pos[0]
+    dy = world_target[1] - shoulder_pos[1]
+    dz = world_target[2] - shoulder_pos[2]
+    
+    q0 = np.arctan2(dy, dx)
+    
+    r_xy = np.sqrt(dx**2 + dy**2)
+    D = np.sqrt(r_xy**2 + dz**2)
+    D = np.clip(D, 0.01, L1 + L2 - 0.001)
+    
+    cos_q2 = (D**2 - L1**2 - L2**2) / (2 * L1 * L2)
+    cos_q2 = np.clip(cos_q2, -1.0, 1.0)
+    
+    # Positive q2 bends the elbow "down" relative to link1 for a natural arch
+    q2 = np.arccos(cos_q2)
+    
+    phi = np.arctan2(-dz, r_xy)
+    theta = np.arctan2(L2 * np.sin(q2), L1 + L2 * np.cos(q2))
+    
+    q1 = phi - theta
+    
     return np.array([q0, q1, q2])
 
 
@@ -247,6 +255,12 @@ class PickPlaceTask:
 
     def reset(self):
         mujoco.mj_resetData(self.model, self.data)
+        
+        # Initialize arm in a safe 'up' pose so it doesn't sweep through the cube on startup
+        safe_q = np.array([0.0, -1.0, 1.5])
+        self.data.qpos[:3] = safe_q
+        self.data.ctrl[:3] = safe_q
+        
         self._reset_state()
         jitter = self.rng.uniform(-0.004, 0.004, 2)
         self.data.qpos[self.cube_qpos_idx    ] += jitter[0]
@@ -270,8 +284,8 @@ class PickPlaceTask:
 
     def _set_arm(self, target: np.ndarray, close_gripper: bool):
         """IK → delay buffer → actuator ctrl."""
-        q    = np.clip(simple_ik(target, self.arm_base),
-                       [-1.57, -1.57, -2.5], [1.57, 1.57, 0.5])
+        q = np.clip(simple_ik(target, self.arm_base),
+                    [-1.57, -1.57, -2.5], [1.57, 1.57, 2.5])
         grip = -0.028 if close_gripper else 0.0
         self._cmd_buf.append({"q": q, "g": grip})
 
@@ -287,9 +301,13 @@ class PickPlaceTask:
     def _attach_cube(self):
         """Snap cube to EEF (kinematic grasp start)."""
         eef = self._eef_pos()
+        cube = self._cube_pos()
+        if np.linalg.norm(eef - cube) > 0.06:
+            return  # Grasp failed (too far away)
         self.data.qpos[self.cube_qpos_idx:self.cube_qpos_idx + 3] = eef
         mujoco.mj_forward(self.model, self.data)
         self._grasped = True
+        print(f"  [Grasp] Attached at EEF={eef.round(3)}")
 
     def _move_cube_with_eef(self):
         """Track EEF with cube every step (after mj_step overrides gravity)."""
@@ -299,14 +317,21 @@ class PickPlaceTask:
         mujoco.mj_forward(self.model, self.data)
 
     def _should_slip(self) -> bool:
-        """Physics: does grip force < required force for the current acceleration?"""
+        """Physics: does grip force < required force for the current acceleration?
+        
+        Two failure mechanisms:
+          1. Friction too low: max_grip_friction < required
+          2. Object too heavy: required > MAX_GRIPPER_FORCE (gripper motor limit)
+        """
         g         = 9.81
         lift_acc  = self.lift_speed * 50
         required  = self.obj_mass * (g + lift_acc)
-        max_grip  = self.friction * self.obj_mass * g * 8.0
+        max_grip_friction = self.friction * self.obj_mass * g * 8.0
+        MAX_GRIPPER_FORCE = 40.0  # Newtons — realistic gripper motor limit
+        max_grip  = min(max_grip_friction, MAX_GRIPPER_FORCE)
         if required > max_grip:
             return True
-        return self.rng.random() < max(0.0, (1.0 - self.friction) * 0.02)
+        return False
 
     def _next_phase(self, phase: str):
         print(f"  → {self.phase} → {phase}  (step {self.step_count})")
@@ -330,55 +355,49 @@ class PickPlaceTask:
         # ── State machine ─────────────────────────────────────────────────────
 
         if self.phase == PHASE_APPROACH:
-            # Move above cube (use frozen start, not live position)
-            target = np.array([cs[0], cs[1], cs[2] + 0.12])
+            # Move to a point above the cube, then we'll descend in pre_grasp
+            target = np.array([cs[0], cs[1], cs[2] + 0.08])
             self._set_arm(target, close_gripper=False)
             if np.linalg.norm(eef - target) < 0.08 or self.phase_step > 150:
                 self._next_phase(PHASE_PRE_GRASP)
 
         elif self.phase == PHASE_PRE_GRASP:
-            # Lower to just above cube
-            target = np.array([cs[0], cs[1], cs[2] + 0.01])
+            # Descend to cube level
+            target = np.array([cs[0], cs[1], cs[2] + 0.06])
             self._set_arm(target, close_gripper=False)
             if self.phase_step > 200:
                 self._next_phase(PHASE_CONTACT)
 
         elif self.phase == PHASE_CONTACT:
-            # Close gripper around cube
-            target = np.array([cs[0], cs[1], cs[2] + 0.01])
+            target = np.array([cs[0], cs[1], cs[2] + 0.05])
             self._set_arm(target, close_gripper=True)
             if self.phase_step > 120:
                 self._next_phase(PHASE_GRASP)
 
         elif self.phase == PHASE_GRASP:
-            # Hold position, attach cube kinematically
-            target = np.array([cs[0], cs[1], cs[2] + 0.01])
+            target = np.array([cs[0], cs[1], cs[2] + 0.05])
             self._set_arm(target, close_gripper=True)
             if self.phase_step == 50:
                 self._attach_cube()
-                print(f"  [Grasp] Attached at EEF={eef.round(3)}")
             if self._grasped and self.phase_step > 80:
                 self._next_phase(PHASE_LIFT)
 
         elif self.phase == PHASE_LIFT:
-            # Lift smoothly: incrementally increase target z
-            lift_target_z = cs[2] + 0.01 + self.phase_step * self.lift_speed * 0.002
-            lift_target_z = min(lift_target_z, self.arm_base[2] + 0.15)
+            # Lift cube above table (to ~0.55m, clearing table + cube)
+            lift_target_z = cs[2] + 0.02 + self.phase_step * self.lift_speed * 0.002
+            lift_target_z = min(lift_target_z, 0.55)
             self._set_arm(np.array([cs[0], cs[1], lift_target_z]),
                           close_gripper=True)
-            # Check for slip
             if self._grasped and self._should_slip():
                 self._grasped    = False
                 self._fail_stage = PHASE_LIFT
-                self.done        = True
-            # Transition when high enough
-            if eef[2] > self.arm_base[2] + 0.12:
+                # Do NOT set self.done = True here. Let the simulation continue so the user can watch the cube fall!
+            if eef[2] > 0.52:
                 self._next_phase(PHASE_TRANSPORT)
 
         elif self.phase == PHASE_TRANSPORT:
-            # Move horizontally to target (same height)
-            transport_z = self.arm_base[2] + 0.15
-            # Interpolate from current x,y toward target x,y over time
+            # Move horizontally to target at lift height
+            transport_z = 0.55
             alpha = min(self.phase_step / 400.0, 1.0)
             tx = cs[0] + alpha * (self.target_x - cs[0])
             ty = cs[1] + alpha * (self.target_y - cs[1])
@@ -388,27 +407,40 @@ class PickPlaceTask:
 
         elif self.phase == PHASE_PLACE:
             # Lower cube to table level
-            if self.phase_step == 0:
+            if self.phase_step <= 1:
                 self._place_start_z = eef[2]
             place_z = max(self._place_start_z - self.phase_step * 0.002,
-                          self.arm_base[2] + 0.025)
+                          0.45)  # table surface + cube half-height
             self._set_arm(np.array([self.target_x, self.target_y, place_z]),
                           close_gripper=True)
             if self.phase_step > 300:
                 self._next_phase(PHASE_RELEASE)
 
         elif self.phase == PHASE_RELEASE:
-            # Open gripper, retract upward
-            self._set_arm(np.array([self.target_x, self.target_y, eef[2] + 0.05]),
-                          close_gripper=False)
-            self._grasped = False
+            # Open gripper, THEN retract upward
+            if self.phase_step <= 30:
+                self._set_arm(np.array([self.target_x, self.target_y, eef[2]]),
+                              close_gripper=False)
+            else:
+                self._grasped = False
+                if self.phase_step == 31:
+                    self._release_z = eef[2] + 0.05
+                self._set_arm(np.array([self.target_x, self.target_y, self._release_z]),
+                              close_gripper=False)
+            
             if self.phase_step > 80:
                 cube_f       = self._cube_pos()
                 placed       = cube_f[2] < self.arm_base[2] + 0.20
                 moved        = abs(cube_f[0] - cs[0]) > 0.02 or abs(cube_f[1] - cs[1]) > 0.02
-                self.success = placed and moved
-                if not self.success:
+                at_target    = abs(cube_f[0] - self.target_x) < 0.15 and abs(cube_f[1] - self.target_y) < 0.15
+                self.success = placed and moved and at_target
+                
+                # If we already failed in an earlier phase (e.g. slipped in lift), force failure
+                if self._fail_stage != "none":
+                    self.success = False
+                elif not self.success:
                     self._fail_stage = PHASE_PLACE
+                
                 self.done  = True
                 self.phase = PHASE_DONE
 

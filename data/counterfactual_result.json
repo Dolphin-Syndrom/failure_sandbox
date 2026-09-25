@@ -10,8 +10,8 @@
   "B_failure_stage": "none",
   "conclusion": "confirmed",
   "first_div_A": {
-    "first_divergence_step": 411,
-    "first_divergence_timestamp": 1790331451.1837182,
+    "first_divergence_step": 413,
+    "first_divergence_timestamp": 1790334694.3621583,
     "first_divergence_signal": "in_contact",
     "first_divergence_phase": "transport"
   },

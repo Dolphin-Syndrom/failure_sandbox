@@ -20,7 +20,7 @@ perturbations:
     action_delay: 0.0
     kp: 500.0
     kd: 50.0
-    pose_offset: 0.12
+    pose_offset: 0.20
     lift_speed: 0.3
     num_episodes: 7
     random_seed: 42
@@ -29,7 +29,7 @@ perturbations:
     friction: 0.8
     object_mass: 0.5
     action_delay: 0.0
-    kp: 30.0
+    kp: 0.0
     kd: 3.0
     pose_offset: 0.0
     lift_speed: 0.3
@@ -39,7 +39,7 @@ perturbations:
   - scenario_id: "action_delay"
     friction: 0.8
     object_mass: 0.5
-    action_delay: 0.15
+    action_delay: 0.80
     kp: 500.0
     kd: 50.0
     pose_offset: 0.0
