@@ -20,7 +20,7 @@ perturbations:
     action_delay: 0.0
     kp: 500.0
     kd: 50.0
-    pose_offset: 0.06
+    pose_offset: 0.12
     lift_speed: 0.3
     num_episodes: 7
     random_seed: 42
@@ -49,7 +49,7 @@ perturbations:
 
   - scenario_id: "heavy_object"
     friction: 0.8
-    object_mass: 8.0
+    object_mass: 15.0
     action_delay: 0.0
     kp: 500.0
     kd: 50.0
