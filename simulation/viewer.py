@@ -4,8 +4,9 @@ simulation/viewer.py  —  Watch a single episode in the MuJoCo 3D GUI.
 Usage:
     cd failure_sandbox
     python -m simulation.viewer                          # nominal run
-    python -m simulation.viewer --scenario low_friction  # perturbed run
-    python -m simulation.viewer --scenario fast_lift
+    python -m simulation.viewer --scenario low_friction  # slip failure
+    python -m simulation.viewer --scenario fast_lift     # speed failure
+    python -m simulation.viewer --speed 0.2              # slow-motion (0.2× real-time)
 
 Controls (MuJoCo viewer):
     Left-drag   Rotate camera
@@ -16,6 +17,7 @@ Controls (MuJoCo viewer):
 """
 
 import sys
+import time
 import argparse
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -23,7 +25,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import mujoco
 import mujoco.viewer
 import yaml
-import numpy as np
 from simulation.task import PickPlaceTask, load_config
 
 
@@ -46,26 +47,49 @@ def load_scenario(scenario: str) -> dict:
     return cfg
 
 
-def run_with_viewer(scenario: str = "nominal"):
+def run_with_viewer(scenario: str = "nominal", speed: float = 0.5):
     cfg  = load_scenario(scenario)
     task = PickPlaceTask(cfg)
     task.reset()
 
-    print(f"\n[viewer] Scenario : {cfg['scenario_id']}")
-    print(f"[viewer] friction={cfg.get('friction',0.8)}  "
-          f"mass={cfg.get('object_mass',0.5)}  "
-          f"delay={cfg.get('action_delay',0.0)}s  "
-          f"kp={cfg.get('kp',500)}")
-    print("[viewer] Press SPACE to pause, ESC to quit.\n")
+    dt = cfg.get("simulation_timestep", 0.002)  # seconds per physics step
+    render_interval = dt / speed                  # wall-clock seconds per step
+
+    print(f"\n{'='*50}")
+    print(f"  MuJoCo Viewer — {cfg['scenario_id']}")
+    print(f"{'='*50}")
+    print(f"  friction={cfg.get('friction',0.8)}  mass={cfg.get('object_mass',0.5)}  "
+          f"delay={cfg.get('action_delay',0.0)}s  kp={cfg.get('kp',500)}")
+    print(f"  Playback speed: {speed}× real-time")
+    print(f"  Controls: SPACE=pause  ESC=quit")
+    print(f"{'='*50}\n")
 
     with mujoco.viewer.launch_passive(task.model, task.data) as v:
+        # ── Run episode at controlled speed ──
         while v.is_running() and not task.done:
+            step_start = time.time()
+
             task.step()
             v.sync()
 
-    s, f = task.outcome()
-    print(f"\n[viewer] Result: {'✅ SUCCESS' if s else f'❌ FAILED at [{f}]'}")
-    print(f"[viewer] Steps: {task.step_count}")
+            # Sleep to maintain real-time pacing
+            elapsed    = time.time() - step_start
+            sleep_time = render_interval - elapsed
+            if sleep_time > 0:
+                time.sleep(sleep_time)
+
+        # ── Print result ──
+        s, f = task.outcome()
+        result = '✅ SUCCESS' if s else f'❌ FAILED at [{f}]'
+        print(f"\n  Result : {result}")
+        print(f"  Steps  : {task.step_count}")
+
+        # ── Hold window open so user can inspect final state ──
+        if v.is_running():
+            print("  (Window stays open — press ESC to close)")
+            while v.is_running():
+                v.sync()
+                time.sleep(0.05)
 
 
 if __name__ == "__main__":
@@ -73,5 +97,8 @@ if __name__ == "__main__":
     parser.add_argument("--scenario", default="nominal",
                         help="nominal | low_friction | pose_error | low_gain | "
                              "action_delay | heavy_object | fast_lift")
+    parser.add_argument("--speed", type=float, default=0.5,
+                        help="Playback speed multiplier (default=0.5, i.e. half real-time)")
     args = parser.parse_args()
-    run_with_viewer(args.scenario)
+    run_with_viewer(args.scenario, args.speed)
+
