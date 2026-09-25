@@ -22,6 +22,11 @@ python experiments/run_sweep.py       # Run all 50 episodes (7 conditions)
 python -m evaluation.metrics          # Print failure analysis report
 python -m plots.generate_plots        # Generate all 6 figures
 python -m experiments.counterfactual  # Run counterfactual diagnosis demo
+
+# Watch the simulation live in the MuJoCo 3D GUI:
+python -m simulation.viewer                          # nominal run
+python -m simulation.viewer --scenario low_friction  # slip failure
+python -m simulation.viewer --scenario fast_lift     # speed failure
 ```
 
 ## Project Structure
