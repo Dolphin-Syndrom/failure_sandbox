@@ -43,9 +43,7 @@ class EpisodeLogger:
         self.filepath = self.output_dir / f"{episode_id}.csv"
         self.start_time = time.time()
         self.step_count = 0
-        self._rows = []  # Buffer rows in memory, flush at end (faster I/O)
-
-        print(f"[Logger] Episode {episode_id} | scenario={scenario_id} | file={self.filepath}")
+        self._rows = []  # buffer rows; flush to disk at episode end
 
     def log_step(self, data: dict):
         """
