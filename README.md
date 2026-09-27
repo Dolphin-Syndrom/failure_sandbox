@@ -1,6 +1,5 @@
 # Failure Debugging Sandbox v0
 
-> **Obliviq Labs — Intern Week 1 Project**
 > A simulated robot arm that fails intentionally, records why, and lets you prove the cause.
 
 ## What this project does
